@@ -1,7 +1,7 @@
 import unittest
-from textnode import TextNode,TextType
+from textnode import TextNode, TextType
 
-class TestTestNode(unittest.TestCase):
+class TestTextNode(unittest.TestCase):
     def test_eq(self):
         node = TextNode("Hello world", TextType.ITALIC, "https://google.com")
         node2 = TextNode("Hello world", TextType.ITALIC, "https://google.com")
