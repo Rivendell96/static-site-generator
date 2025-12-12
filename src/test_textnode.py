@@ -1,6 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType, text_node_to_html_node
+from inline_split import split_nodes_delimiter
 
 
 class TestTextNode(unittest.TestCase):
@@ -52,6 +53,36 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
         html_node = text_node_to_html_node(node)
         self.assertEqual(html_node.tag, "b")
         self.assertEqual(html_node.value, "This is bold")
+
+class TestTextNodeSplitNodesDelimiter(unittest.TestCase):
+    def test_spint_nodes_1(self):
+        node = TextNode("This is text with a `code block` word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+        print("DEBUG new_nodes:", new_nodes)
+        excepted_nodes = [TextNode("This is text with a ", TextType.TEXT),
+                          TextNode("code block", TextType.CODE),
+                          TextNode(" word", TextType.TEXT)
+                          ]
+        
+        self.assertEqual(new_nodes, excepted_nodes)
+
+    def test_spint_nodes_2(self):
+        node = TextNode("**This is text** with a `code block` word", TextType.TEXT)
+        bold_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        expected_bold = [
+                        TextNode("This is text", TextType.BOLD),
+                        TextNode(" with a `code block` word", TextType.TEXT),
+                        ]
+        self.assertEqual(bold_nodes, expected_bold)
+
+        code_nodes = split_nodes_delimiter(bold_nodes, "`", TextType.CODE)
+        expected_full = [
+            TextNode("This is text", TextType.BOLD),
+            TextNode(" with a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" word", TextType.TEXT),
+        ]
+        self.assertEqual(code_nodes, expected_full)
 
 
 
