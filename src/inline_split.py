@@ -81,14 +81,30 @@ def extract_markdown_links(text):
     matches = re.findall(r"\[(.*?)\]\((.*?)\)", text)
     return matches
 
-if __name__ == "__main__":
-    node = TextNode(
-    "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev",
-    TextType.TEXT,
-    )
-    new_nodes = split_nodes_link([node])
-    print(new_nodes)
+def text_to_textnodes(text):
+    node = TextNode(text, TextType.TEXT)
+    new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+    new_nodes = split_nodes_delimiter(new_nodes, "_", TextType.ITALIC)
+    new_nodes = split_nodes_delimiter(new_nodes, "`", TextType.CODE)
+    new_nodes = split_nodes_image(new_nodes)
+    new_nodes = split_nodes_link(new_nodes)
+    return new_nodes
 
-    # node = TextNode("This is text with a `code block` word", TextType.TEXT)
-    # new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
-    # print(new_nodes)
+def markdown_to_blocks(text):
+    new_blocks = text.split("\n\n")
+    new_blocks_without_space = map(str.strip, new_blocks)
+    return list(new_blocks_without_space )
+
+
+if __name__ == "__main__":
+    text = """ This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+            """
+    results = markdown_to_blocks(text)
+    for i in results:
+        print(f"{i} \n")
